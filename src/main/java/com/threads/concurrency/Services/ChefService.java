@@ -19,6 +19,8 @@ public class ChefService {
         return chefRepository.save(chef);
     }
 
+// This method in the `ChefService` class is responsible for retrieving all chefs with pagination and
+// caching. Here's a breakdown of what it does:
     // Method to retrieve all chefs with pagination and caching
     @Cacheable("chefs")
     public Page<Chef> getAllChefs(Pageable pageable) {

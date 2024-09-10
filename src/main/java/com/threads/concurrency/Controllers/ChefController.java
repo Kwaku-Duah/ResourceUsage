@@ -28,6 +28,11 @@ public class ChefController {
                 HttpStatus.CREATED);
     }
 
+    
+    /** 
+     * @param pageable
+     * @return ResponseEntity<Page<Chef>>
+     */
     // Pagination integration for optimizing performance
     @GetMapping
     public ResponseEntity<Page<Chef>> getAllChefs(Pageable pageable) {
