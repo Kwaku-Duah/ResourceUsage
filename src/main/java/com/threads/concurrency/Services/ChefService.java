@@ -1,12 +1,14 @@
 package com.threads.concurrency.Services;
 
-import com.threads.concurrency.Entities.*;
-import com.threads.concurrency.Repositories.*;
+import com.threads.concurrency.Entities.Chef;
+import com.threads.concurrency.Repositories.ChefRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.cache.annotation.Cacheable;
 
 @Service
 public class ChefService {
@@ -14,25 +16,29 @@ public class ChefService {
     @Autowired
     private ChefRepository chefRepository;
 
-    // Method to save a new chef
+    // Save and cache chef in Caffeine and Redis
+    @CachePut(value = "chefs", key = "#chef.id")
     public Chef saveChef(Chef chef) {
         return chefRepository.save(chef);
     }
 
-// This method in the `ChefService` class is responsible for retrieving all chefs with pagination and
-// caching. Here's a breakdown of what it does:
-    // Method to retrieve all chefs with pagination and caching
-    @Cacheable("chefs")
+    // Cache all chefs in Caffeine
+    @Cacheable(value = "chefs")
     public Page<Chef> getAllChefs(Pageable pageable) {
         return chefRepository.findAll(pageable);
     }
 
-    // Method to retrieve a chef by ID
+
+
+    // Cacheable method to retrieve chef by ID
+    @Cacheable(value = "chef", key = "#id")
     public Chef getChefById(Long id) {
         return chefRepository.findById(id).orElse(null);
     }
 
-    // Method to delete a chef by ID
+
+    // Cache eviction on chef deletion
+    @CacheEvict(value = "chefs", allEntries = true)
     public void deleteChefById(Long id) {
         chefRepository.deleteById(id);
     }
